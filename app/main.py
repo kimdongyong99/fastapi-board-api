@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from app.database import Base, engine
 from app.routers import user, post
 from app.core.config import settings
-
+from app.models import user as user_model
 app = FastAPI(title=settings.PROJECT_NAME)
 
 # 추후 모델 추가 시 자동 생성
