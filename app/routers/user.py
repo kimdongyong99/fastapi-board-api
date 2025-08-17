@@ -7,7 +7,7 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserOut, TokenOut
 from app.core.security import get_password_hash, verify_password, create_access_token, get_current_user
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter()
 
 @router.get("/health")
 def users_health():
