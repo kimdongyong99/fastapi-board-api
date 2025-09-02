@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, DateTime, func, UniqueConstraint, Index
 from app.database import Base
-
+from sqlalchemy.orm import relationship
 class User(Base):
     __tablename__ = "users"
 
@@ -12,8 +12,11 @@ class User(Base):
     password = Column(String(255), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+    posts = relationship("Post", back_populates="author", cascade="all, delete-orphan")
+
     __table_args__ = (
         UniqueConstraint("username", name="uq_users_username"),
         UniqueConstraint("email", name="uq_users_email"),
-        Index("ix_users_email", "email"),
+
     )
+
