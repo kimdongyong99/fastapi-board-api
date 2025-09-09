@@ -2,7 +2,7 @@
 # 목적: 게시글 CRUD + 권한(작성자만 수정/삭제)
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
 from app.models.post import Post
@@ -87,3 +87,22 @@ def delete_post(post_id: int,
     db.delete(post)
     db.commit()
     return  # 204 No Content
+
+# 목록: 작성자 정보 포함 + N+1 방지
+@router.get("", response_model=List[PostWithAuthorOut])
+def list_posts(q: Optional[str] = Query(None, description="제목/본문 키워드"),
+               skip: int = Query(0, ge=0),
+               limit: int = Query(20, ge=1, le=100),
+               db: Session = Depends(get_db)):
+    query = db.query(Post).options(joinedload(Post.author)).order_by(Post.created_at.desc())
+    if q:
+        query = query.filter((Post.title.contains(q)) | (Post.content.contains(q)))
+    return query.offset(skip).limit(limit).all()
+
+# 상세: 작성자 정보 포함
+@router.get("/{post_id}", response_model=PostWithAuthorOut)
+def get_post(post_id: int, db: Session = Depends(get_db)):
+    post = db.query(Post).options(joinedload(Post.author)).filter(Post.post_id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return post

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
 from pydantic import ConfigDict
-
+from app.schemas.user import UserPublic
 class PostBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     content: str = Field(..., min_length=1)
@@ -25,3 +25,7 @@ class PostOut(PostBase):
 
     # SQLAlchemy 모델에서 바로 직렬화되도록
     model_config = ConfigDict(from_attributes=True)
+
+# ✅ 작성자 정보 포함 버전
+class PostWithAuthorOut(PostOut):
+    author: UserPublic
