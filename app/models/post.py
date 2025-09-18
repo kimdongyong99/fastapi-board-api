@@ -25,6 +25,8 @@ class Post(Base):
     # ORM 관계: Post.author ↔ User.posts
     author = relationship("User", back_populates="posts")
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
+    likes = relationship("Like", back_populates="post", cascade="all, delete-orphan")
+
     __table_args__ = (
         Index("ix_posts_author_created", "author_id", "created_at"),
     )

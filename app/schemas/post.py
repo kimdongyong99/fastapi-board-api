@@ -29,3 +29,7 @@ class PostOut(PostBase):
 # ✅ 작성자 정보 포함 버전
 class PostWithAuthorOut(PostOut):
     author: UserPublic
+
+class PostWithAuthorStatsOut(PostWithAuthorOut):
+    likes_count: int
+    my_like: bool | None = None

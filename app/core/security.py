@@ -13,7 +13,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Swagger Authorize와 연동
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
-
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/users/login", auto_error=False)
 def get_password_hash(raw: str) -> str:
     return pwd_context.hash(raw)
 
@@ -47,3 +47,19 @@ def get_current_user(
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
+
+
+def get_current_user_optional(
+    db: Session = Depends(get_db),
+    token: Optional[str] = Depends(oauth2_scheme_optional),
+) -> Optional[User]:
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        sub: str | None = payload.get("sub")
+        if not sub:
+            return None
+    except JWTError:
+        return None
+    return db.query(User).filter(User.user_id == sub).first()

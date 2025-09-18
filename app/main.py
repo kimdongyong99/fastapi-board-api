@@ -6,6 +6,7 @@ from app.models import user as user_model
 from app.models import post as post_model
 from app.routers import comment as comment_router
 from app.models import comment as comment_model
+from app.models import like as like_model
 app = FastAPI(title=settings.PROJECT_NAME)
 
 # 추후 모델 추가 시 자동 생성

@@ -13,6 +13,8 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     posts = relationship("Post", back_populates="author", cascade="all, delete-orphan")
+    likes = relationship("Like", back_populates="user", cascade="all, delete-orphan")
+
 
     __table_args__ = (
         UniqueConstraint("username", name="uq_users_username"),
